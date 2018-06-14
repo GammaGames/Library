@@ -50,7 +50,6 @@ self.addEventListener('activate', function(event) {
             );
         })
     );
-    event.waitUntil(self.clients.claim());
     console.log("old caches removed");
 });
 
