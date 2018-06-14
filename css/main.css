@@ -1,0 +1,27 @@
+body {
+    background-color: #1B1C1D;
+}
+
+#title {
+    font-size: 2em;
+    line-height: 2.5em;
+    text-align: center;
+    margin: 0 0 10px 0;
+    color: #767676;
+}
+
+.card {
+    margin: 10px auto 10px auto !important;
+}
+
+.ui.move.reveal > .text.content {
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.ui.celled.grid {
+    margin: 0;
+}

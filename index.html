@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang=en-GB>
+	<head>
+		<meta charset='utf-8'>
+		<title>Library</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' href='/lib/semantic.min.css'>
+		<link rel='stylesheet' href='/css/main.css'>
+        <script src='/lib/jquery.min.js'></script>
+        <script src='/lib/underscore.min.js'></script>
+        <script src='/lib/backbone.min.js'></script>
+        <script src='/lib/semantic.min.js'></script>
+	</head>
+	<body>
+        <div class="pusher">
+            <div id="title">
+                The Library
+            </div>
+
+            <div class="ui doubling cards" id="library">
+            </div>
+            <div id="libraryModal">
+            </div>
+        </div>
+
+        <!-- Templates -->
+        <!--Book detail template-->
+        <<script type="text/template" id="detail_template">
+            <div class="ui basic segment">
+                <div class="ui segments">
+                    <div class="ui basic segment">
+                        <div class="ui horizontal label">
+                            Title
+                        </div>
+                        <%= book.title %>
+                    </div>
+                    <div class="ui basic segment">
+                        <div class="ui horizontal label">
+                            Author
+                        </div>
+                        <%= book.author %>
+                    </div>
+                    <div class="ui basic segment">
+                        <div class="ui horizontal label">
+                            Published
+                        </div>
+                        <%= book.year %>
+                    </div>
+                </div>
+                <div class="ui piled segment">
+                    <div class="ui top attached label">Details</div>
+                    <div class="ui content">
+                        <p>
+                            <%= book.description %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <!--Library (collection of books) template-->
+        <script type="text/template" id="library_template">
+            <% for(var i = 0; i < library.length; i++) {%>
+                <% var current = library[i]; %>
+                <div class="ui centered grey card" id="<%= current.id %>">
+                    <div class="ui move left reveal">
+                        <div class="visible content">
+                            <img class="ui massive fluid image" src="img/covers/<%= current.cover %>"></img>
+                        </div>
+                        <div class="hidden text content">
+                            <%= _.template($("#detail_template").html())({'book': current}) %>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </script>
+
+        <!--Book details modal-->
+        <script type="text/template" id="modal_template">
+            <div class="ui large modal" id="<%= book.id + 'Modal' %>">
+                <div class="ui celled grid">
+                    <div class="seven wide column">
+                        <img class="ui centered massive fluid rounded image" src="img/covers/<%= book.cover %>"></img>
+                    </div>
+                    <div class="nine wide scrolling content column">
+                        <div id="ui segments">
+                            <%= _.template($("#detail_template").html())({'book': book}) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script src='/js/models.js'></script>
+        <script src='/js/collections.js'></script>
+        <script src='/js/router.js'></script>
+        <script src='/js/view/views.js'></script>
+		<script src='/js/app.js'></script>
+		<script>
+            // From https://developers.google.com/web/fundamentals/codelabs/offline/#register_a_service_worker_on_the_site
+			if('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/sw.js', { scope: '/'}).then(function(registration) {
+                    console.log('registered');
+                }).catch(error => console.log('Service Worker Error', error, arguments));
+
+				navigator.serviceWorker.ready.then(function(registration) {
+                    console.log('ready');
+				});
+			}
+		</script>
+	</body>
+</html>
