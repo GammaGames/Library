@@ -59,7 +59,14 @@ self.addEventListener('fetch', function(event) {
         event.respondWith(
             caches.match(event.request).then(function(response) {
                 // Get cache or fetch if doesn't exist
-                return response || fetch(event.request);
+                return result || fetch(event.request).then(function(response) {
+                    // Clone response, cache it, and return it
+                    var clone = response.clone();
+                    caches.open(cacheName).then(cache => {
+                        cache.put(event.request.url, clone)
+                    });
+                    return response;
+                });
             })
         );
     }
