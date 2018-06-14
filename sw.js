@@ -1,12 +1,13 @@
 // Ideally you would set the version with a commit hash
 var version = new Date();
 const cacheName = `library-` + version;
-console.log(cacheName);
 self.addEventListener('install', e => {
     console.log("installing");
+    // Forces the new service worker to take over the new one after installing
     if(self.skipWaiting) {
         self.skipWaiting();
     }
+    // Cache necessary files
     e.waitUntil(
         caches.open(cacheName).then(cache => {
             console.log("caching");
@@ -27,7 +28,6 @@ self.addEventListener('install', e => {
                 '/js/view/views.js',
             ]).then(() => {
                 console.log("installed");
-                self.skipWaiting();
             })
         })
     );
@@ -53,16 +53,31 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    // Taken https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache
-    event.respondWith(
-        fetch(event.request).then(function(response) {
-            var clone = response.clone();
-            caches.open(cacheName).then(cache => {
-                cache.put(event.request.url, clone)
-            });
-            return response;
-        }).catch(function() {
-            return caches.match(event.request, {cacheName: cacheName});
-        })
-    );
+    // From https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache
+    // If it is a library file, use the cache
+    if(/lib/.test(event.request.url)) {
+        event.respondWith(
+            caches.match(event.request).then(function(response) {
+                // Get cache or fetch if doesn't exist
+                return response || fetch(event.request);
+            })
+        );
+    }
+    // Else get the live file
+    else {
+        event.respondWith(
+            // Try to fetch, if successful
+            fetch(event.request).then(function(response) {
+                // Clone response, cache it, and return it
+                var clone = response.clone();
+                caches.open(cacheName).then(cache => {
+                    cache.put(event.request.url, clone)
+                });
+                return response;
+            // If an error, check the cache
+            }).catch(function() {
+                return caches.match(event.request, {cacheName: cacheName});
+            })
+        );
+    }
 });
