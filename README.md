@@ -1,4 +1,4 @@
-# Library
+# library
 A basic library created using backbone and semantic ui, now with service workers!  
 I included comments with sources for more information
 
