@@ -25,7 +25,6 @@ self.addEventListener('install', e => {
                 '/js/collections.js',
                 '/js/router.js',
                 '/js/view/views.js',
-                '/js/app.js',
             ]).then(() => {
                 console.log("installed");
                 self.skipWaiting();
