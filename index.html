@@ -119,15 +119,41 @@
             });
 
             // From https://developers.google.com/web/fundamentals/codelabs/offline/#register_a_service_worker_on_the_site
-			if('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/sw.js', { scope: '/'}).then(function(registration) {
+            if('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js', { scope: '/'}).then(registration => {
                     console.log('registered');
-                }).catch(error => console.log('Service Worker Error', error, arguments));
+                }).catch(error => console.log('error', error, arguments));
 
-				navigator.serviceWorker.ready.then(function(registration) {
+                navigator.serviceWorker.ready.then(registration => {
                     console.log('ready');
-				});
-			}
+                });
+
+                // From http://craig-russell.co.uk/2016/01/29/service-worker-messaging.html#.WyPm5Z9Ki9I
+                navigator.serviceWorker.addEventListener('message', event => {
+                    switch(event.data) {
+                        case "addAll":
+                            var toCache = [];
+                            var css = document.getElementsByTagName("link");
+                            for(el of css) {
+                                var href = el.getAttribute("href");
+                                if(href) {
+                                    toCache.push(href);
+                                }
+                            }
+                            var js = document.getElementsByTagName("script");
+                            for(el of js) {
+                                var src = el.getAttribute("src");
+                                if(src) {
+                                    toCache.push(src);
+                                }
+                            }
+                            event.ports[0].postMessage(toCache);
+                            break;
+                        default:
+                            console.log(event.data);
+                    }
+                });
+            }
 		</script>
 	</body>
 </html>
